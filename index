@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>มหัศจรรย์มาตราตัวสะกด</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Sarabun', sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f9ff;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #FF9AA2, #FFB7B2);
+            padding: 20px 0;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 2.5em;
+            margin: 0;
+        }
+        .subtitle {
+            color: #fff;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .menu-button {
+            background-color: #FFDAC1;
+            color: #5E3B4D;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .menu-button:hover {
+            background-color: #E2F0CB;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .menu-button.active {
+            background-color: #B5EAD7;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            transform: translateY(1px);
+        }
+        .page {
+            display: none;
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: #FF9AA2;
+            border-bottom: 3px dotted #B5EAD7;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .matra-card {
+            background: linear-gradient(135deg, #E2F0CB, #B5EAD7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .matra-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+        .matra-title {
+            color: #5E3B4D;
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .example-word {
+            background-color: white;
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-size: 1.2em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .highlight {
+            color: #FF6B6B;
+            font-weight: bold;
+        }
+        .game-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .game-word {
+            font-size: 2em;
+            color: #5E3B4D;
+            margin-bottom: 20px;
+        }
+        .game-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .game-option {
+            background-color: #FFDAC1;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .game-option:hover {
+            background-color: #FFB7B2;
+            transform: translateY(-3px);
+        }
+        .result {
+            font-size: 1.3em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .correct {
+            color: #28a745;
+        }
+        .incorrect {
+            color: #dc3545;
+        }
+        .score {
+            background-color: #E2F0CB;
+            border-radius: 10px;
+            padding: 10px 20px;
+            display: inline-block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .exercise-container {
+            margin-top: 20px;
+        }
+        .exercise-item {
+            background-color: #F8F9FA;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .exercise-question {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .exercise-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .exercise-option {
+            background-color: #E2F0CB;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .exercise-option:hover {
+            background-color: #B5EAD7;
+        }
+        .exercise-option.selected {
+            background-color: #FF9AA2;
+            color: white;
+        }
+        .submit-button {
+            background-color: #FF9AA2;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        .submit-button:hover {
+            background-color: #FF6B6B;
+            transform: translateY(-3px);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 0;
+            color: #888;
+            font-size: 0.9em;
+        }
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confetti-canvas"></canvas>
+    <header>
+        <div class="container">
+            <h1>มหัศจรรย์มาตราตัวสะกด</h1>
+            <div class="subtitle">เรียนรู้และเล่นสนุกกับมาตราตัวสะกดภาษาไทย</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="menu">
+            <button class="menu-button active" data-page="home">หน้าหลัก</button>
+            <button class="menu-button" data-page="learn">เรียนรู้มาตรา</button>
+            <button class="menu-button" data-page="game">เกมจับคู่มาตรา</button>
+            <button class="menu-button" data-page="exercise">แบบฝึกหัด</button>
+        </div>
+
+        <div id="home" class="page active">
+            <h2>ยินดีต้อนรับสู่โลกมหัศจรรย์มาตราตัวสะกด</h2>
+            <div class="matra-card">
+                <h3 class="matra-title">มาตราตัวสะกดคืออะไร?</h3>
+                <p>มาตราตัวสะกด คือ พยัญชนะที่อยู่ท้ายคำ ทำหน้าที่สะกดคำให้มีความหมาย มีทั้งหมด 8 มาตรา ได้แก่</p>
+                <ol>
+                    <li>แม่ ก กา (ไม่มีตัวสะกด)</li>
+                    <li>แม่กก (สะกดด้วย ก)</li>
+                    <li>แม่กด (สะกดด้วย ด ต จ ช ซ ฎ ฏ ฐ ฑ ฒ ต ถ ท ธ ศ ษ ส)</li>
+                    <li>แม่กบ (สะกดด้วย บ ป พ ฟ ภ)</li>
+                    <li>แม่กง (สะกดด้วย ง)</li>
+                    <li>แม่กน (สะกดด้วย น ญ ณ ร ล ฬ)</li>
+                    <li>แม่กม (สะกดด้วย ม)</li>
+                    <li>แม่เกย (สะกดด้วย ย)</li>
+                </ol>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">เรียนรู้อย่างสนุก</h3>
+                <p>เว็บไซต์นี้จะช่วยให้น้องๆ เรียนรู้มาตราตัวสะกดได้อย่างสนุกสนาน ผ่านการเรียนรู้และเล่นเกม</p>
+                <p><strong>เมนูการใช้งาน:</strong></p>
+                <ul>
+                    <li><strong>เรียนรู้มาตรา</strong> - อธิบายมาตราตัวสะกดแต่ละมาตราพร้อมตัวอย่างคำ</li>
+                    <li><strong>เกมจับคู่มาตรา</strong> - เกมสนุกๆ ให้น้องๆ เลือกว่าคำไหนอยู่ในมาตราใด</li>
+                    <li><strong>แบบฝึกหัด</strong> - ทดสอบความรู้ด้วยแบบฝึกหัดหลากหลาย</li>
+                </ul>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">คำแนะนำสำหรับคุณครูและผู้ปกครอง</h3>
+                <p>เว็บไซต์นี้ออกแบบมาเพื่อช่วยเสริมการเรียนรู้เรื่องมาตราตัวสะกดสำหรับเด็กระดับประถม โดยเน้นการเรียนรู้ผ่านเกมและกิจกรรมที่สนุกสนาน</p>
+                <p>ท่านสามารถใช้เว็บไซต์นี้เป็นสื่อการสอนในชั้นเรียน หรือให้นักเรียนใช้เป็นแบบฝึกหัดเสริมได้</p>
+            </div>
+        </div>
+
+        <div id="learn" class="page">
+            <h2>เรียนรู้มาตราตัวสะกด</h2>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">แม่ ก กา (ไม่มีตัวสะกด)</h3>
+                <p>คำที่ไม่มีตัวสะกด ประกอบด้วยเสียงสระล้วนๆ</p>
+                <div class="examples">
+                    <div class="example-word">ตา</div>
+                    <div class="example-word">กิน</div>
+                    <div class="example-word">ปู</div>
+                    <div class="example-word">ปี</div>
+                    <div class="example-word">เธอ</div>
+                </div>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">แม่กก (สะกดด้วย ก)</h3>
+                <p>คำที่มี ก เป็นตัวสะกด</p>
+                <div class="examples">
+                    <div class="example-word">รั<span class="highlight">ก</span></div>
+                    <div class="example-word">สุ<span class="highlight">ข</span></div>
+                    <div class="example-word">นั<span class="highlight">ก</span></div>
+                    <div class="example-word">หย<span class="highlight">ก</span></div>
+                    <div class="example-word">โช<span class="highlight">ค</span></div>
+                </div>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">แม่กด (สะกดด้วย ด ต จ ช ซ ฎ ฏ ฐ ฑ ฒ ต ถ ท ธ ศ ษ ส)</h3>
+                <p>คำที่มีเสียงสะกดแบบ ด</p>
+                <div class="examples">
+                    <div class="example-word">ร<span class="highlight">ถ</span></div>
+                    <div class="example-word">รั<span class="highlight">ฐ</span></div>
+                    <div class="example-word">กา<span class="highlight">ด</span></div>
+                    <div class="example-word">อากา<span class="highlight">ศ</span></div>
+                    <div class="example-word">พั<span class="highlight">ด</span></div>
+                </div>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">แม่กบ (สะกดด้วย บ ป พ ฟ ภ)</h3>
+                <p>คำที่มีเสียงสะกดแบบ บ</p>
+                <div class="examples">
+                    <div class="example-word">กลั<span class="highlight">บ</span></div>
+                    <div class="example-word">จ<span class="highlight">บ</span></div>
+                    <div class="example-word">กระจั<span class="highlight">บ</span></div>
+                    <div class="example-word">สร<span class="highlight">ป</span></div>
+                    <div class="example-word">ภา<span class="highlight">พ</span></div>
+                </div>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">แม่กง (สะกดด้วย ง)</h3>
+                <p>คำที่มี ง เป็นตัวสะกด</p>
+                <div class="examples">
+                    <div class="example-word">ช้า<span class="highlight">ง</span></div>
+                    <div class="example-word">น<span class="highlight">ง</span></div>
+                    <div class="example-word">ส<span class="highlight">ง</span>ข์</div>
+                    <div class="example-word">ถุ<span class="highlight">ง</span></div>
+                    <div class="example-word">ซ<span class="highlight">ง</span></div>
+                </div>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">แม่กน (สะกดด้วย น ญ ณ ร ล ฬ)</h3>
+                <p>คำที่มีเสียงสะกดแบบ น</p>
+                <div class="examples">
+                    <div class="example-word">บ้า<span class="highlight">น</span></div>
+                    <div class="example-word">เดิ<span class="highlight">น</span></div>
+                    <div class="example-word">นค<span class="highlight">ร</span></div>
+                    <div class="example-word">วา<span class="highlight">ล</span></div>
+                    <div class="example-word">การุ<span class="highlight">ณ</span>ย์</div>
+                </div>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">แม่กม (สะกดด้วย ม)</h3>
+                <p>คำที่มี ม เป็นตัวสะกด</p>
+                <div class="examples">
+                    <div class="example-word">ส<span class="highlight">ม</span></div>
+                    <div class="example-word">ขอบคุ<span class="highlight">ม</span></div>
+                    <div class="example-word">ถา<span class="highlight">ม</span></div>
+                    <div class="example-word">ก<span class="highlight">ม</span>ล</div>
+                    <div class="example-word">ดำ</div>
+                </div>
+            </div>
+            
+            <div class="matra-card">
+                <h3 class="matra-title">แม่เกย (สะกดด้วย ย)</h3>
+                <p>คำที่มี ย เป็นตัวสะกด</p>
+                <div class="examples">
+                    <div class="example-word">สบา<span class="highlight">ย</span></div>
+                    <div class="example-word">สา<span class="highlight">ย</span></div>
+                    <div class="example-word">หอ<span class="highlight">ย</span></div>
+                    <div class="example-word">ใ<span class="highlight">ย</span></div>
+                    <div class="example-word">อ้อ<span class="highlight">ย</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game" class="page">
+            <h2>เกมจับคู่มาตราตัวสะกด</h2>
+            <p>เลือกว่าคำที่เห็นอยู่ในมาตราใด</p>
+            
+            <div class="game-container">
+                <div class="game-word"></div>
+                <div class="game-options"></div>
+                <div class="result"></div>
+                <div class="score">คะแนน: <span id="score">0</span></div>
+                <button class="submit-button" id="next-word">ข้อถัดไป</button>
+            </div>
+        </div>
+
+        <div id="exercise" class="page">
+            <h2>แบบฝึกหัด</h2>
+            <p>ลองทำแบบฝึกหัดเพื่อทดสอบความเข้าใจ</p>
+            
+            <div class="exercise-container" id="exercise-container">
+                <!-- แบบฝึกหัดจะถูกสร้างโดย JavaScript -->
+            </div>
+            
+            <button class="submit-button" id="submit-exercise">ส่งคำตอบ</button>
+        </div>
+
+        <div class="footer">
+            &copy; 2025 มหัศจรรย์มาตราตัวสะกด - เว็บแอพสำหรับการเรียนรู้ภาษาไทย
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลสำหรับเกมและแบบฝึกหัด
+        const matraData = [
+            { name: "แม่ ก กา", examples: ["ตา", "กิน", "ปู", "ปี", "เธอ", "มา", "นี่", "โอ", "จะ", "ดู"] },
+            { name: "แม่กก", examples: ["รัก", "สุข", "นัก", "หยก", "โชค", "เมฆ", "ลูก", "เลข", "ตัก", "จอก"] },
+            { name: "แม่กด", examples: ["รถ", "รัฐ", "กาด", "อากาศ", "พัด", "มิตร", "เพชร", "อาหาร", "บาท", "เกด"] },
+            { name: "แม่กบ", examples: ["กลับ", "จบ", "กระจับ", "สรุป", "ภาพ", "รูป", "ทับ", "ดาบ", "นาบ", "ซุบ"] },
+            { name: "แม่กง", examples: ["ช้าง", "นง", "สงข์", "ถุง", "ซง", "กวาง", "ขวาง", "แมง", "กำลัง", "หาง"] },
+            { name: "แม่กน", examples: ["บ้าน", "เดิน", "นคร", "วาล", "การุณย์", "คน", "ขนม", "ดิน", "จาน", "งาน"] },
+            { name: "แม่กม", examples: ["สม", "ขอบคุม", "ถาม", "กมล", "ดำ", "ลืม", "ยืม", "ชม", "ตาม", "ลม"] },
+            { name: "แม่เกย", examples: ["สบาย", "สาย", "หอย", "ใย", "อ้อย", "ลอย", "คล้อย", "โดย", "ปลาย", "กล้วย"] }
+        ];
+
+        // ข้อมูลสำหรับแบบฝึกหัด
+        const exercises = [
+            {
+                question: "คำว่า \"บ้าน\" อยู่ในมาตราใด",
+                options: ["แม่กก", "แม่กด", "แม่กน", "แม่กง"],
+                answer: "แม่กน"
+            },
+            {
+                question: "คำว่า \"รถ\" อยู่ในมาตราใด",
+                options: ["แม่กด", "แม่กบ", "แม่กง", "แม่กน"],
+                answer: "แม่กด"
+            },
+            {
+                question: "คำที่มี ง เป็นตัวสะกด อยู่ในมาตราใด",
+                options: ["แม่กก", "แม่กน", "แม่กม", "แม่กง"],
+                answer: "แม่กง"
+            },
+            {
+                question: "คำว่า \"ลอย\" อยู่ในมาตราใด",
+                options: ["แม่ ก กา", "แม่กม", "แม่เกย", "แม่กน"],
+                answer: "แม่เกย"
+            },
+            {
+                question: "คำในข้อใดที่อยู่ในมาตรา แม่กบ",
+                options: ["รูป", "ดิน", "ขวาง", "รัก"],
+                answer: "รูป"
+            },
+            {
+                question: "คำในข้อใดที่ไม่มีตัวสะกด (แม่ ก กา)",
+                options: ["ตา", "นัก", "บ้าน", "สาย"],
+                answer: "ตา"
+            },
+            {
+                question: "คำว่า \"จบ\" อยู่ในมาตราใด",
+                options: ["แม่กก", "แม่กด", "แม่กบ", "แม่กง"],
+                answer: "แม่กบ"
+            },
+            {
+                question: "คำในข้อใดอยู่ในมาตรา แม่กก",
+                options: ["รัก", "ถาม", "เดิน", "ช้าง"],
+                answer: "รัก"
+            },
+            {
+                question: "คำที่มี ร ล ฬ เป็นตัวสะกด อยู่ในมาตราใด",
+                options: ["แม่กด", "แม่กบ", "แม่กน", "แม่เกย"],
+                answer: "แม่กน"
+            },
+            {
+                question: "คำว่า \"ลม\" อยู่ในมาตราใด",
+                options: ["แม่กก", "แม่กน", "แม่กม", "แม่กง"],
+                answer: "แม่กม"
+            }
+        ];
+
+        // เริ่มต้นสำหรับเกม
+        let currentWord = '';
+        let currentMatra = '';
+        let score = 0;
+        let usedWords = [];
+
+        // เริ่มต้นสำหรับแบบฝึกหัด
+        let userAnswers = {};
+
+        // ฟังก์ชั่นสำหรับเปลี่ยนหน้า
+        document.querySelectorAll('.menu-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // ลบคลาส active จากปุ่มและหน้าทั้งหมด
+                document.querySelectorAll('.menu-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                
+                // เพิ่มคลาส active ให้กับปุ่มที่คลิกและหน้าที่เกี่ยวข้อง
+                this.classList.add('active');
+                const pageId = this.getAttribute('data-page');
+                document.getElementById(pageId).classList.add('active');
+                
+                // เริ่มเกมใหม่เมื่อเข้าหน้าเกม
+                if (pageId === 'game') {
+                    startGame();
+                }
+                
+                // สร้างแบบฝึกหัดเมื่อเข้าหน้าแบบฝึกหัด
+                if (pageId === 'exercise') {
+                    generateExercises();
+                }
+            });
+        });
+
+        // เกมจับคู่มาตรา
+        function startGame() {
+            // รีเซ็ตเกมเมื่อเริ่มใหม่
+            score = 0;
+            usedWords = [];
+            document.getElementById('score').textContent = score;
+            document.querySelector('.result').textContent = '';
+            
+            // เลือกคำใหม่
+            nextWord();
+            
+            // เพิ่มการทำงานของปุ่มข้อถัดไป
+            document.getElementById('next-word').onclick = nextWord;
+        }
+
+        function nextWord() {
+            // เคลียร์ผลลัพธ์
+            document.querySelector('.result').textContent = '';
+            
+            // สุ่มเลือกมาตรา
+            const randomMatraIndex = Math.floor(Math.random() * matraData.length);
+            const selectedMatra = matraData[randomMatraIndex];
+            
+            // สุ่มเลือกคำจากมาตรานั้น ที่ยังไม่เคยใช้
+            let availableWords = selectedMatra.examples.filter(word => !usedWords.includes(word));
+            
+            // ถ้าไม่มีคำที่ยังไม่ได้ใช้ ให้รีเซ็ตคำที่ใช้แล้ว
+            if (availableWords.length === 0) {
+                usedWords = [];
+                availableWords = selectedMatra.examples;
+            }
+            
+            // สุ่มเลือกคำ
+            const randomWordIndex = Math.floor(Math.random() * availableWords.length);
+            currentWord = availableWords[randomWordIndex];
+            currentMatra = selectedMatra.name;
+            
+            // เพิ่มคำนี้เข้าไปในรายการที่ใช้แล้ว
+            usedWords.push(currentWord);
+            
+            // แสดงคำ
+            document.querySelector('.game-word').textContent = currentWord;
+            
+            // สร้างตัวเลือก
+            createOptions();
+        }
+
+        function createOptions() {
+            const optionsContainer = document.querySelector('.game-options');
+            optionsContainer.innerHTML = '';
+            
+            // สร้างตัวเลือกทั้งหมด 4 ตัวเลือก
+            const allMatras = matraData.map(matra => matra.name);
+            
+            // เพิ่มคำตอบที่ถูกต้อง
+            const options = [currentMatra];
+            
+            // เพิ่มตัวเลือกอื่นๆ
+            while (options.length < 4) {
+                const randomMatra = allMatras[Math.floor(Math.random() * allMatras.length)];
+                if (!options.includes(randomMatra)) {
+                    options.push(randomMatra);
+                }
+            }
+            
+            // สลับตำแหน่งตัวเลือก
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            // สร้างปุ่มตัวเลือก
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'game-option';
+                button.textContent = option;
+                button.onclick = function() {
+                    checkAnswer(option);
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const resultElement = document.querySelector('.result');
+            
+            // ปิดการคลิกปุ่มตัวเลือกทั้งหมด
+            document.querySelectorAll('.game-option').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            if (selectedOption === currentMatra) {
+                resultElement.textContent = '✓ ถูกต้อง!';
+                resultElement.className = 'result correct';
+                score += 10;
+                showConfetti();
+            } else {
+                resultElement.textContent = '✗ ไม่ถูกต้อง คำตอบคือ: ' + currentMatra;
+                resultElement.className = 'result incorrect';
+            }
+            
+            // อัพเดตคะแนน
+            document.getElementById('score').textContent = score;
+        }
+
+        // สร้างแบบฝึกหัด
+        function generateExercises() {
+            const container = document.getElementById('exercise-container');
+            container.innerHTML = '';
+            userAnswers = {};
+            
+            exercises.forEach((exercise, index) => {
+                const exerciseItem = document.createElement('div');
+                exerciseItem.className = 'exercise-item';
+                
+                const questionElement = document.createElement('div');
+                questionElement.className = 'exercise-question';
+                questionElement.textContent = `${index + 1}. ${exercise.question}`;
+                exerciseItem.appendChild(questionElement);
+                
+                const optionsElement = document.createElement('div');
+                optionsElement.className = 'exercise-options';
+                
+                exercise.options.forEach(option => {
+                    const optionButton = document.createElement('button');
+                    optionButton.className = 'exercise-option';
+                    optionButton.textContent = option;
+                    optionButton.onclick = function() {
+                        // ลบคลาส selected จากทุกปุ่มในกลุ่มนี้
+                        optionsElement.querySelectorAll('.exercise-option').forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+                        
+                        // เพิ่มคลาส selected ให้กับปุ่มที่เลือก
+                        optionButton.classList.add('selected');
+                        
+                        // บันทึกคำตอบ
+                        userAnswers[index] = option;
+                    };
+                    optionsElement.appendChild(optionButton);
+                });
+                
+                exerciseItem.appendChild(optionsElement);
+                container.appendChild(exerciseItem);
+            });
+            
+            // เพิ่มการทำงานของปุ่มส่งคำตอบ
+            document.getElementById('submit-exercise').onclick = checkExercises;
+        }
+
+        function checkExercises() {
+            let correctCount = 0;
+            
+            exercises.forEach((exercise, index) => {
+                const exerciseItem = document.querySelectorAll('.exercise-item')[index];
+                const resultElement = document.createElement('div');
+                resultElement.className = 'result';
+                
+                // เช็คว่าตอบถูกหรือไม่
+                if (userAnswers[index] === exercise.answer) {
+                    resultElement.textContent = '✓ ถูกต้อง';
+                    resultElement.className = 'result correct';
+                    correctCount++;
+                } else {
+                    resultElement.textContent = '✗ ไม่ถูกต้อง คำตอบคือ: ' + exercise.answer;
+                    resultElement.className = 'result incorrect';
+                }
+                
+                // ลบผลลัพธ์เดิม (ถ้ามี)
+                const oldResult = exerciseItem.querySelector('.result');
+                if (oldResult) {
+                    exerciseItem.removeChild(oldResult);
+                }
+                
+                // เพิ่มผลลัพธ์ใหม่
+                exerciseItem.appendChild(resultElement);
+            });
+            
+            // แสดงคะแนนรวม
+            alert(`คุณได้ ${correctCount} คะแนน จากทั้งหมด ${exercises.length} ข้อ!`);
+            
+            // ถ้าได้คะแนนมากกว่า 80%
+            if (correctCount >= exercises.length * 0.8) {
+                showConfetti();
+            }
+        }
+
+        // สร้าง confetti เมื่อตอบถูก
+        function showConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const pieces = [];
+            const numberOfPieces = 200;
+            const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7'];
+            
+            class Piece {
+                constructor() {
+                    this.x = canvas.width * Math.random();
+                    this.y = -10;
+                    this.rotation = Math.random() * 360;
+                    this.size = Math.random() * 10 + 5;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.speed = Math.random() * 3 + 2;
+                    this.rotationSpeed = Math.random() * 2 - 1;
+                }
+                
+                update() {
+                    this.y += this.speed;
+                    this.rotation += this.rotationSpeed;
+                }
+                
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation * Math.PI / 180);
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+            
+            for (let i = 0; i < numberOfPieces; i++) {
+                pieces.push(new Piece());
+            }
+            
+            let animationId;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                pieces.forEach(piece => {
+                    piece.update();
+                    piece.draw();
+                });
+                
+                // ยกเลิกการเคลื่อนไหวเมื่อทุกชิ้นหล่นออกไปนอกจอ
+                if (pieces.every(piece => piece.y > canvas.height)) {
+                    cancelAnimationFrame(animationId);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        // เพิ่ม event listener เมื่อหน้าเว็บโหลดเสร็จ
+        window.onload = function() {
+            // กำหนดขนาด canvas ให้เต็มหน้าจอ
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+
+        // ปรับขนาด canvas เมื่อขนาดหน้าจอเปลี่ยน
+        window.onresize = function() {
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
