@@ -505,4 +505,287 @@
                     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
                     
                     // เพิ่มคลาส active ให้กับปุ่มที่คลิกและหน้าที่เกี่ยวข้อง
-                    this.classList.add('
+                    this.classList.add('active');
+                    const pageId = this.getAttribute('data-page');
+                    document.getElementById(pageId).classList.add('active');
+                    
+                    // เริ่มเกมใหม่เมื่อเข้าหน้าเกม
+                    if (pageId === 'game') {
+                        startGame();
+                    }
+                    
+                    // สร้างแบบฝึกหัดเมื่อเข้าหน้าแบบฝึกหัด
+                    if (pageId === 'exercise') {
+                        generateExercises();
+                    }
+                });
+            });
+
+            // เพิ่ม Event Listener ให้กับปุ่มข้อถัดไปในเกม
+            document.getElementById('next-word').addEventListener('click', nextWord);
+            
+            // เพิ่ม Event Listener ให้กับปุ่มส่งคำตอบในแบบฝึกหัด
+            document.getElementById('submit-exercise').addEventListener('click', checkExercises);
+            
+            // สร้าง Canvas สำหรับ Confetti
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // เกมจับคู่มาตรา
+        function startGame() {
+            // รีเซ็ตเกมเมื่อเริ่มใหม่
+            score = 0;
+            usedWords = [];
+            document.getElementById('score').textContent = score;
+            document.querySelector('.result').textContent = '';
+            
+            // เลือกคำใหม่
+            nextWord();
+        }
+
+        function nextWord() {
+            // เคลียร์ผลลัพธ์
+            document.querySelector('.result').textContent = '';
+            
+            // เปิดใช้งานปุ่มตัวเลือกทั้งหมด
+            document.querySelectorAll('.game-option').forEach(btn => {
+                btn.disabled = false;
+            });
+            
+            // สุ่มเลือกมาตรา
+            const randomMatraIndex = Math.floor(Math.random() * matraData.length);
+            const selectedMatra = matraData[randomMatraIndex];
+            
+            // สุ่มเลือกคำจากมาตรานั้น ที่ยังไม่เคยใช้
+            let availableWords = selectedMatra.examples.filter(word => !usedWords.includes(word));
+            
+            // ถ้าไม่มีคำที่ยังไม่ได้ใช้ ให้รีเซ็ตคำที่ใช้แล้ว
+            if (availableWords.length === 0) {
+                usedWords = [];
+                availableWords = selectedMatra.examples;
+            }
+            
+            // สุ่มเลือกคำ
+            const randomWordIndex = Math.floor(Math.random() * availableWords.length);
+            currentWord = availableWords[randomWordIndex];
+            currentMatra = selectedMatra.name;
+            
+            // เพิ่มคำนี้เข้าไปในรายการที่ใช้แล้ว
+            usedWords.push(currentWord);
+            
+            // แสดงคำ
+            document.querySelector('.game-word').textContent = currentWord;
+            
+            // สร้างตัวเลือก
+            createOptions();
+        }
+
+        function createOptions() {
+            const optionsContainer = document.querySelector('.game-options');
+            optionsContainer.innerHTML = '';
+            
+            // สร้างตัวเลือกทั้งหมด 4 ตัวเลือก
+            const allMatras = matraData.map(matra => matra.name);
+            
+            // เพิ่มคำตอบที่ถูกต้อง
+            const options = [currentMatra];
+            
+            // เพิ่มตัวเลือกอื่นๆ
+            while (options.length < 4) {
+                const randomMatra = allMatras[Math.floor(Math.random() * allMatras.length)];
+                if (!options.includes(randomMatra)) {
+                    options.push(randomMatra);
+                }
+            }
+            
+            // สลับตำแหน่งตัวเลือก
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            // สร้างปุ่มตัวเลือก
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'game-option';
+                button.textContent = option;
+                button.onclick = function() {
+                    checkAnswer(option);
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const resultElement = document.querySelector('.result');
+            
+            // ปิดการคลิกปุ่มตัวเลือกทั้งหมด
+            document.querySelectorAll('.game-option').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            if (selectedOption === currentMatra) {
+                resultElement.textContent = '✓ ถูกต้อง!';
+                resultElement.className = 'result correct';
+                score += 10;
+                showConfetti();
+            } else {
+                resultElement.textContent = '✗ ไม่ถูกต้อง คำตอบคือ: ' + currentMatra;
+                resultElement.className = 'result incorrect';
+            }
+            
+            // อัพเดตคะแนน
+            document.getElementById('score').textContent = score;
+        }
+
+        // สร้างแบบฝึกหัด
+        function generateExercises() {
+            const container = document.getElementById('exercise-container');
+            container.innerHTML = '';
+            userAnswers = {};
+            
+            exercises.forEach((exercise, index) => {
+                const exerciseItem = document.createElement('div');
+                exerciseItem.className = 'exercise-item';
+                
+                const questionElement = document.createElement('div');
+                questionElement.className = 'exercise-question';
+                questionElement.textContent = `${index + 1}. ${exercise.question}`;
+                exerciseItem.appendChild(questionElement);
+                
+                const optionsElement = document.createElement('div');
+                optionsElement.className = 'exercise-options';
+                
+                exercise.options.forEach(option => {
+                    const optionButton = document.createElement('button');
+                    optionButton.className = 'exercise-option';
+                    optionButton.textContent = option;
+                    optionButton.onclick = function() {
+                        // ลบคลาส selected จากทุกปุ่มในกลุ่มนี้
+                        optionsElement.querySelectorAll('.exercise-option').forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+                        
+                        // เพิ่มคลาส selected ให้กับปุ่มที่เลือก
+                        optionButton.classList.add('selected');
+                        
+                        // บันทึกคำตอบ
+                        userAnswers[index] = option;
+                    };
+                    optionsElement.appendChild(optionButton);
+                });
+                
+                exerciseItem.appendChild(optionsElement);
+                container.appendChild(exerciseItem);
+            });
+        }
+
+        function checkExercises() {
+            let correctCount = 0;
+            
+            exercises.forEach((exercise, index) => {
+                const exerciseItem = document.querySelectorAll('.exercise-item')[index];
+                const resultElement = document.createElement('div');
+                resultElement.className = 'result';
+                
+                // เช็คว่าตอบถูกหรือไม่
+                if (userAnswers[index] === exercise.answer) {
+                    resultElement.textContent = '✓ ถูกต้อง';
+                    resultElement.className = 'result correct';
+                    correctCount++;
+                } else {
+                    resultElement.textContent = '✗ ไม่ถูกต้อง คำตอบคือ: ' + exercise.answer;
+                    resultElement.className = 'result incorrect';
+                }
+                
+                // ลบผลลัพธ์เดิม (ถ้ามี)
+                const oldResult = exerciseItem.querySelector('.result');
+                if (oldResult) {
+                    exerciseItem.removeChild(oldResult);
+                }
+                
+                // เพิ่มผลลัพธ์ใหม่
+                exerciseItem.appendChild(resultElement);
+            });
+            
+            // แสดงคะแนนรวม
+            alert(`คุณได้ ${correctCount} คะแนน จากทั้งหมด ${exercises.length} ข้อ!`);
+            
+            // ถ้าได้คะแนนมากกว่า 80%
+            if (correctCount >= exercises.length * 0.8) {
+                showConfetti();
+            }
+        }
+
+        // สร้าง confetti เมื่อตอบถูก
+        function showConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const pieces = [];
+            const numberOfPieces = 200;
+            const colors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7'];
+            
+            class Piece {
+                constructor() {
+                    this.x = canvas.width * Math.random();
+                    this.y = -10;
+                    this.rotation = Math.random() * 360;
+                    this.size = Math.random() * 10 + 5;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.speed = Math.random() * 3 + 2;
+                    this.rotationSpeed = Math.random() * 2 - 1;
+                }
+                
+                update() {
+                    this.y += this.speed;
+                    this.rotation += this.rotationSpeed;
+                }
+                
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation * Math.PI / 180);
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+            
+            for (let i = 0; i < numberOfPieces; i++) {
+                pieces.push(new Piece());
+            }
+            
+            let animationId;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                pieces.forEach(piece => {
+                    piece.update();
+                    piece.draw();
+                });
+                
+                // ยกเลิกการเคลื่อนไหวเมื่อทุกชิ้นหล่นออกไปนอกจอ
+                if (pieces.every(piece => piece.y > canvas.height)) {
+                    cancelAnimationFrame(animationId);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        // ปรับขนาด canvas เมื่อขนาดหน้าจอเปลี่ยน
+        window.addEventListener('resize', function() {
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
